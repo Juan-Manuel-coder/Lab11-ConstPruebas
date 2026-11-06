@@ -1,37 +1,77 @@
 package com.tecsup.petclinic.services;
 
+import com.tecsup.petclinic.entities.Specialty;
+import com.tecsup.petclinic.exceptions.SpecialtyNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
 public class SpecialtyServiceTest {
 
-	//@Autowired
-   //	private OwnerService ownerService;
+    @Autowired
+    private SpecialtyService specialtyService;
 
-	/**
-	 * 
-	 */
-	/*
-	@Test
-	public void testFindOwnerById() {
+    @Test
+    public void testFindSpecialtyById() {
+        String NAME = "radiology";
+        Integer ID = 1;
 
-		long ID = 1;
-		String NAME = "Jaime";
-		Owner owner = null;
-		
-		try {
-			
-			owner = ownerService.findById(ID);
-			
-		} catch (OwnertNotFoundException e) {
-			fail(e.getMessage());
-		}
-		log.info("" + owner);
+        Specialty specialty = null;
+        try {
+            specialty = specialtyService.findById(ID);
+        } catch (SpecialtyNotFoundException e) {
+            fail(e.getMessage());
+        }
 
-		assertEquals(NAME, owner.getName());
+        assertNotNull(specialty);
+        assertEquals(NAME, specialty.getName());
+    }
 
-	}
-	*/
+    @Test
+    public void testCreateSpecialty() {
+        String NAME = "dermatology";
+
+        Specialty specialty = new Specialty(NAME);
+        Specialty specialtyCreated = specialtyService.create(specialty);
+
+        assertNotNull(specialtyCreated.getId());
+        assertEquals(NAME, specialtyCreated.getName());
+    }
+
+    @Test
+    public void testUpdateSpecialty() {
+        String NAME = "cardiology";
+        String UP_NAME = "cardiologyUpdated";
+
+        Specialty specialty = new Specialty(NAME);
+        Specialty specialtyCreated = specialtyService.create(specialty);
+
+        specialtyCreated.setName(UP_NAME);
+        Specialty specialtyUpdated = specialtyService.update(specialtyCreated);
+
+        assertEquals(UP_NAME, specialtyUpdated.getName());
+    }
+
+    @Test
+    public void testDeleteSpecialty() {
+        String NAME = "neurology";
+
+        Specialty specialty = new Specialty(NAME);
+        Specialty specialtyCreated = specialtyService.create(specialty);
+
+        try {
+            specialtyService.delete(specialtyCreated.getId());
+        } catch (SpecialtyNotFoundException e) {
+            fail(e.getMessage());
+        }
+
+        assertThrows(SpecialtyNotFoundException.class, () -> {
+            specialtyService.findById(specialtyCreated.getId());
+        });
+    }
 }
